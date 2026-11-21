@@ -7,7 +7,11 @@ import {
   type VistaProducto,
 } from '../lib/supabase';
 
-export function InventarioView() {
+interface InventarioViewProps {
+  onNuevoProducto: () => void;
+}
+
+export function InventarioView({ onNuevoProducto }: InventarioViewProps) {
   const [productos, setProductos] = useState<VistaProducto[]>([]);
   const [categorias, setCategorias] = useState<Categoria[]>([]);
   const [totalMovimientos, setTotalMovimientos] = useState<number>(0);
@@ -90,8 +94,8 @@ export function InventarioView() {
 
         <button
           type="button"
-          onClick={() => {}}
-          className="inline-flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-[#1D4ED8] px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#1E40AF]"
+          onClick={onNuevoProducto}
+          className="inline-flex min-h-[44px] shrink-0 items-center gap-2 whitespace-nowrap rounded-md bg-[#1D4ED8] px-4 py-2 text-sm font-medium text-white transition-colors duration-150 hover:bg-[#1E40AF] sm:min-h-[40px]"
         >
           <Plus className="h-4 w-4" aria-hidden="true" />
           <span>Nuevo producto</span>
@@ -105,18 +109,18 @@ export function InventarioView() {
         >
           <div className="flex items-start gap-2.5">
             <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
-            <div className="space-y-0.5 text-sm">
+            <div className="space-y-1 text-sm">
               <p className="font-semibold">No se pudo cargar el inventario desde Supabase.</p>
               <p className="font-mono text-xs text-[#991B1B]">{errorCarga}</p>
               <p className="text-xs text-[#991B1B]">
-                Verifica tu conexión o vuelve a consultar para actualizar los datos.
+                Revisa tu conexión a internet o pulsa «Reintentar carga» para volver a consultar.
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={() => void cargarInventario()}
-            className="min-h-[40px] shrink-0 self-start whitespace-nowrap rounded-md border border-[#FCA5A5] bg-white px-3 py-1.5 text-sm font-medium text-[#B91C1C] transition-colors duration-150 hover:bg-[#FEE2E2] sm:self-center"
+            className="min-h-[44px] shrink-0 self-start whitespace-nowrap rounded-md border border-[#FCA5A5] bg-white px-3.5 py-2 text-sm font-medium text-[#B91C1C] transition-colors duration-150 hover:bg-[#FEE2E2] sm:min-h-[40px] sm:self-center"
           >
             Reintentar carga
           </button>
@@ -168,7 +172,7 @@ export function InventarioView() {
             Buscar producto por nombre
           </label>
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]"
+            className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#475569]"
             aria-hidden="true"
           />
           <input
@@ -177,7 +181,7 @@ export function InventarioView() {
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             placeholder="Buscar por nombre..."
-            className="min-h-[40px] w-full rounded-md border border-[#E2E8F0] bg-white py-2 pl-9 pr-3 text-sm text-[#111827] placeholder:text-[#64748B]"
+            className="min-h-[44px] w-full rounded-md border border-[#E2E8F0] bg-white py-2 pl-9 pr-3 text-sm text-[#111827] placeholder:text-[#475569] sm:min-h-[40px]"
           />
         </div>
 
@@ -189,7 +193,7 @@ export function InventarioView() {
             id="filtro-categoria"
             value={categoriaSeleccionada}
             onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-            className="min-h-[40px] w-full appearance-none rounded-md border border-[#E2E8F0] bg-white py-2 pl-3 pr-9 text-sm text-[#111827]"
+            className="min-h-[44px] w-full appearance-none rounded-md border border-[#E2E8F0] bg-white py-2 pl-3 pr-9 text-sm text-[#111827] sm:min-h-[40px]"
           >
             <option value="todas">Todas las categorías</option>
             {categorias.map((categoria) => (
@@ -199,7 +203,7 @@ export function InventarioView() {
             ))}
           </select>
           <ChevronDown
-            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#64748B]"
+            className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#475569]"
             aria-hidden="true"
           />
         </div>
@@ -211,7 +215,7 @@ export function InventarioView() {
               setBusqueda('');
               setCategoriaSeleccionada('todas');
             }}
-            className="min-h-[40px] self-start whitespace-nowrap px-2 text-sm font-medium text-[#1D4ED8] hover:underline sm:self-auto"
+            className="min-h-[44px] self-start whitespace-nowrap px-2 text-sm font-medium text-[#1D4ED8] hover:underline sm:min-h-[40px] sm:self-auto"
           >
             Limpiar filtros
           </button>
@@ -278,7 +282,7 @@ export function InventarioView() {
                 setBusqueda('');
                 setCategoriaSeleccionada('todas');
               }}
-              className="mt-3 min-h-[40px] whitespace-nowrap rounded-md border border-[#E2E8F0] bg-white px-3.5 py-2 text-sm font-medium text-[#111827] transition-colors duration-150 hover:bg-[#F7F8FA]"
+              className="mt-3 min-h-[44px] whitespace-nowrap rounded-md border border-[#E2E8F0] bg-white px-3.5 py-2 text-sm font-medium text-[#111827] transition-colors duration-150 hover:bg-[#F7F8FA] sm:min-h-[40px]"
             >
               Mostrar todos los productos
             </button>
