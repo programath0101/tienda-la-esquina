@@ -1,39 +1,11 @@
-import { useCallback, useEffect, useState } from 'react';
-import { AlertCircle, BookOpen, RefreshCw } from 'lucide-react';
-import { supabase, type Categoria } from './lib/supabase';
+import { useState } from 'react';
+import { BookOpen } from 'lucide-react';
+import { InventarioView } from './components/InventarioView';
 
 type VistaActiva = 'inventario' | 'movimientos';
 
 export default function App() {
   const [vistaActiva, setVistaActiva] = useState<VistaActiva>('inventario');
-  const [categorias, setCategorias] = useState<Categoria[]>([]);
-  const [cargandoCategorias, setCargandoCategorias] = useState<boolean>(true);
-  const [errorConexion, setErrorConexion] = useState<string | null>(null);
-
-  const cargarCategorias = useCallback(async () => {
-    setCargandoCategorias(true);
-    setErrorConexion(null);
-
-    const { data, error } = await supabase
-      .from('categorias')
-      .select('id, nombre')
-      .order('nombre', { ascending: true });
-
-    if (error) {
-      setCategorias([]);
-      setErrorConexion(
-        error.message || 'No se pudo consultar la tabla categorias en Supabase.'
-      );
-    } else {
-      setCategorias(data ?? []);
-    }
-
-    setCargandoCategorias(false);
-  }, []);
-
-  useEffect(() => {
-    void cargarCategorias();
-  }, [cargarCategorias]);
 
   return (
     <div className="min-h-screen bg-[#F7F8FA] text-[#111827]">
@@ -89,105 +61,7 @@ export default function App() {
 
       <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
         {vistaActiva === 'inventario' ? (
-          <section aria-labelledby="titulo-inventario" className="space-y-6">
-            <div className="flex flex-wrap items-end justify-between gap-4">
-              <div className="space-y-1">
-                <h1
-                  id="titulo-inventario"
-                  className="text-2xl font-bold tracking-tight text-[#111827] sm:text-3xl"
-                >
-                  Inventario
-                </h1>
-                <p className="max-w-2xl text-sm leading-relaxed text-[#475569]">
-                  Esqueleto inicial y prueba de conexión con Supabase.
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => void cargarCategorias()}
-                disabled={cargandoCategorias}
-                className="inline-flex min-h-[40px] shrink-0 items-center gap-2 whitespace-nowrap rounded-md border border-[#E2E8F0] bg-white px-3.5 py-2 text-sm font-medium text-[#111827] transition-colors duration-150 hover:bg-[#F7F8FA] disabled:cursor-not-allowed disabled:opacity-60"
-              >
-                <RefreshCw
-                  className={`h-4 w-4 text-[#475569] ${cargandoCategorias ? 'animate-spin' : ''}`}
-                  aria-hidden="true"
-                />
-                <span>Volver a consultar</span>
-              </button>
-            </div>
-
-            {errorConexion && (
-              <div
-                role="alert"
-                className="flex flex-col gap-3 rounded-lg border border-[#FECACA] bg-[#FEF2F2] p-4 text-[#B91C1C] sm:flex-row sm:items-center sm:justify-between"
-              >
-                <div className="flex items-start gap-2.5">
-                  <AlertCircle className="mt-0.5 h-5 w-5 shrink-0" aria-hidden="true" />
-                  <div className="space-y-0.5 text-sm">
-                    <p className="font-semibold">
-                      Error al conectar con Supabase para leer las categorías.
-                    </p>
-                    <p className="font-mono text-xs text-[#991B1B]">{errorConexion}</p>
-                    <p className="text-xs text-[#991B1B]">
-                      Revisa la URL, la publishable key en configuración o las políticas de lectura de la tabla categorias.
-                    </p>
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => void cargarCategorias()}
-                  className="min-h-[40px] shrink-0 self-start whitespace-nowrap rounded-md border border-[#FCA5A5] bg-white px-3 py-1.5 text-sm font-medium text-[#B91C1C] transition-colors duration-150 hover:bg-[#FEE2E2] sm:self-center"
-                >
-                  Reintentar conexión
-                </button>
-              </div>
-            )}
-
-            <div className="overflow-hidden rounded-lg border border-[#E2E8F0] border-t-2 border-t-[#1D4ED8] bg-white">
-              <div className="flex items-center justify-between border-b border-[#E2E8F0] px-5 py-3.5">
-                <h2 className="text-base font-semibold text-[#111827]">
-                  Categorías en el cuaderno
-                </h2>
-                {!cargandoCategorias && !errorConexion && (
-                  <span className="font-mono text-xs tabular-nums text-[#475569]">
-                    {categorias.length}{' '}
-                    {categorias.length === 1 ? 'categoría' : 'categorías'}
-                  </span>
-                )}
-              </div>
-
-              {cargandoCategorias ? (
-                <ul className="divide-y divide-[#E2E8F0]" aria-label="Cargando categorías">
-                  {[1, 2, 3, 4].map((fila) => (
-                    <li key={fila} className="flex items-center justify-between px-5 py-3.5">
-                      <div className="h-4 w-36 rounded bg-[#E2E8F0]/70" />
-                      <div className="h-4 w-10 rounded bg-[#E2E8F0]/50" />
-                    </li>
-                  ))}
-                </ul>
-              ) : errorConexion ? (
-                <div className="px-5 py-8 text-sm text-[#475569]">
-                  No hay categorías disponibles hasta que se restablezca la conexión.
-                </div>
-              ) : categorias.length === 0 ? (
-                <div className="px-5 py-8 text-sm text-[#475569]">
-                  Conexión exitosa, pero la tabla categorias aún no tiene registros.
-                </div>
-              ) : (
-                <ul className="divide-y divide-[#E2E8F0]">
-                  {categorias.map((categoria) => (
-                    <li
-                      key={categoria.id}
-                      className="flex items-center px-5 py-3 text-sm font-medium text-[#111827]"
-                    >
-                      {categoria.nombre}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </section>
+          <InventarioView />
         ) : (
           <section aria-labelledby="titulo-movimientos" className="space-y-4">
             <div className="space-y-1">
@@ -204,7 +78,7 @@ export default function App() {
 
             <div className="rounded-lg border border-[#E2E8F0] border-t-2 border-t-[#1D4ED8] bg-white p-6">
               <p className="text-sm text-[#475569]">
-                Mientras tanto, puedes revisar la conexión con la base de datos desde la pestaña Inventario.
+                Mientras tanto, puedes consultar el inventario completo desde la pestaña Inventario.
               </p>
               <button
                 type="button"
